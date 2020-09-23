@@ -1,0 +1,7 @@
+echo "start">>log
+date>>log
+echo "date>log;time nohup run_on_scotus 1>stdoutfile 2>stderrfile &;date>>log
+echo "python3.6 run_citation_graph_on_directory_list.py scotus.list scotus_c">>log
+python3.6 run_citation_graph_on_directory_list.py scotus.list scotus_c
+echo "end">>log
+date>>log
