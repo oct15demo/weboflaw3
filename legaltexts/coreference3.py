@@ -547,7 +547,7 @@ def write_global_IE_file(triples):
     global global_versions
     for out_file,xml_list,local_keys in triples:
         ## ignore local_keys
-        with open(out_file,'w') as outstream:
+        with open(out_file,'w', encoding='utf-8') as outstream:
             all_str = ''
             for tree in xml_list:
                 info = tree[0]
@@ -673,7 +673,8 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
     global global_citation_id
     global filename_to_global_citation_dict
     logger.debug(TXT_file)
-    with open(TXT_file, encoding='utf-8') as instream:
+#    with open(TXT_file, encoding='utf-8') as instream:
+    with open(TXT_file,encoding='utf-8') as instream:
         f_line = instream.read()
         words = [['',0]]
         for j in range(0, len(f_line)):
@@ -999,7 +1000,7 @@ def run_global_coreference2(input_directories,outfile_prefix,txt_file_type='.txt
     read_in_csv_file(initial_table_file,outfile_prefix,trace=trace)
     ## input('pause for complete csv load')
     ## print(global_citations)
-    with open(out_graph,'w') as f_citation_graph,open(global_table_file,'w') as f_global_citations:
+    with open(out_graph,'w') as f_citation_graph,open(global_table_file,'w', encoding='utf-8') as f_global_citations:
         title_list = ['global_id','id1','lookup_key','entry_type','party1_id', 'party2_id', 'party1','party2','party1_short','party2_short','case_name', 'standard_reporter','volume','page_number']
         title_string = title_list[0]
         for title in title_list[1:]:
@@ -1031,4 +1032,4 @@ def run_global_coreference2(input_directories,outfile_prefix,txt_file_type='.txt
     if processed_f:
         processed_f.close()
 
-    
+ 

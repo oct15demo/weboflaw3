@@ -584,7 +584,7 @@ def fill_in_data_from_IE_outfile(IE_file,values,txt_file,trace=False):
     ## otherwise, only consider "first" citations that are on the same line as each other
     docket_relations = {}
     if os.path.isfile(IE_file):
-        with open(IE_file) as instream:
+        with open(IE_file, encoding='utf-8') as instream:
             for line in instream:
                 try:
                     type_FS = ET.fromstring(line) 
@@ -1071,6 +1071,7 @@ def writeCSV(file, filename, folder,matching_IE_file,trace=False):
     party_pattern = re.compile('parties\">(.*)</p>')
     values = {}
     try:
+        data = json.load
         data = json.load(file)
         values['id1'] = filename.split('/')[-1][:-5]
         values['folder'] = folder
