@@ -44,7 +44,7 @@ def increment_version(number):
     elif type(number) == str:
         new_number = round((float(number)+.001),3)
     else:
-        print('number in increment_version is type',type(number))
+        logger.debug('number in increment_version is type'+ str(type(number)))
         raise(Exception)
     return(str(new_number))
 
@@ -102,7 +102,7 @@ def probably_coreferential_citations(citation_attributes,citation_lookup):
             return(True)
 
 def update_global_citations(info_dict,id1=False,trace=False):
-    ## print(1,info_dict)
+    ## logger.debug(1,info_dict)
     if id1:
         if ('id1' in info_dict) and (info_dict['id1']==id1) and \
           ('citation_global_level_id' in info_dict) and \
@@ -120,13 +120,13 @@ def update_global_citations(info_dict,id1=False,trace=False):
             else:
                 old_global_version = False
             if trace and old_global_version:
-                print('Warning: Changing Coreference properties of:',lookup_key)
-                print('Previous global id:',old_global_version)
+                logger.debug('Warning: Changing Coreference properties of:' + str(lookup_key))
+                logger.debug('Previous global id:' + str(old_global_version))
             new_dict = info_dict.copy()
             list_of_globals = filename_to_global_citation_dict[info_dict['id1']]
             global_version = increment_version(list_of_globals[-1])
             if trace:
-                print('new global id:',global_version)
+                logger.debug('new global id:' + str(global_version))
             if 'no_current_file' in info_dict:
                 new_dict['no_current_file']=True
             if trace and old_global_version:
@@ -157,7 +157,7 @@ def update_global_citations(info_dict,id1=False,trace=False):
             if lookup_key and (not lookup_key in global_citations):
                 global_citations[lookup_key] = info_dict
             if ((not global_id) or (global_id not in global_versions)) and trace:
-                print(info_dict)
+                logger.debug(info_dict)
             entry = global_versions[global_id]
             if ('entry_type' in info_dict):
                 entry_type = info_dict['entry_type']
@@ -232,15 +232,15 @@ def update_global_citations(info_dict,id1=False,trace=False):
                     global_citations[key]=new_dict
             if len(uncovered_keys)>0:
                 if trace:
-                    print('Warning possibly uncovered coreferential items')
-                    print(1,info_dict)
-                    print(uncovered_keys)
+                    logger.debug('Warning possibly uncovered coreferential items')
+                    logger.debug('1' + str(info_dict))
+                    logger.debug(uncovered_keys)
                     input('pause 2')
             if (len(file_anchored_coref)>0):
                 if trace:
-                    print('Warning file_anchored_coref -- probably an error')
-                    print(1,info_dict)
-                    print(2,file_anchored_coref)
+                    logger.debug('Warning file_anchored_coref -- probably an error')
+                    logger.debug('1' + str(info_dict))
+                    logger.debug('2' + str(file_anchored_coref))
                     input('pause 3')
 
 def add_global_citation(info_dict,trace=False,matching_citations=False):
@@ -309,14 +309,14 @@ def add_global_citation(info_dict,trace=False,matching_citations=False):
                 orphans.append(key)
         if len(problems)>0:
             if trace:
-                print('coreference merging issue')
-                print('current_info:',info_dict)
-                print('matching items')
+                logger.debug('coreference merging issue')
+                logger.debug('current_info:'  + str(info_dict))
+                logger.debug('matching items')
                 for fnd in len(mergeable):
-                    print(fnd+1,mergeable[fnd])
-                print('problems')
+                    logger.debug(fnd+1,mergeable[fnd])
+                logger.debug('problems')
                 for prob in len(problems):
-                    print(prob+1,problems[prob])
+                    logger.debug(str(prob+1) + str(problems[prob]))
                 input('pause 4')
         if (not id1) and (len(alt_id1s)>0):
             id1=alt_id1s[0]
@@ -384,8 +384,8 @@ def getCitation(xml, local_citation_dict,linked_citations, document_level_id, gl
             ## loop thru a copy of the list (so removing items has no effect on loop)
             if not matching_id in local_citation_dict:
                 if trace:
-                    print(matching_id)
-                    print(citation_attributes)
+                    logger.debug(matching_id)
+                    logger.debug(citation_attributes)
                 if trace:
                     input('pause 5')
                 matching_citation_attributes = False
@@ -420,7 +420,7 @@ def getCitation(xml, local_citation_dict,linked_citations, document_level_id, gl
                 new_matching_citations.append(citation_attributes)
             if not ignore_item:
                 if trace and (not 'entry_type' in citation_attributes):
-                    print(citation_attributes)
+                    logger.debug(citation_attributes)
                 entry_type = citation_attributes['entry_type']
                 for feature in ['party1','party1_short','party2','party2_short','name','standard_reporter','volume','page_number']:
                     if (feature in matching_citation_attributes) and key_compatible_with_entry(entry_type,feature) and \
@@ -452,8 +452,8 @@ def getCitation(xml, local_citation_dict,linked_citations, document_level_id, gl
     global_version = False
     if not 'lookup_key' in citation_attributes:
         if trace:
-            print('no lookup_key')
-            print(citation_attributes)
+            logger.debug('no lookup_key')
+            logger.debug(citation_attributes)
         if trace:
             input('pause 6')
     elif citation_attributes['lookup_key'] in global_citations:
@@ -582,20 +582,20 @@ def write_global_citations(f_global_citations, trace=False):
         if ('party1_local_name_id' in citation) and ('party2_local_name_id' in citation):
             if (not citation['party1_local_name_id'] in local_names) or (not citation['party2_local_name_id'] in local_names):
                 if trace:
-                    print('party1_local or party2_local not in local_names')
-                    print(local_names)
-                    print(TXT_file)
-                    print(citation)
+                    logger.debug('party1_local or party2_local not in local_names')
+                    logger.debug(local_names)
+                    logger.debug(TXT_file)
+                    logger.debug(citation)
                     input('pause 8')
             else:
                 new_str += ';'.join(local_names[citation['party1_local_name_id']]) + '\t' + ';'.join(local_names[citation['party2_local_name_id']]) + '\t'
         elif ('party1_local_name_id' in citation):
             if (not citation['party1_local_name_id'] in local_names):
                 if trace:
-                    print('party1_local not in local_names')
-                    print(local_names)
-                    print(TXT_file)
-                    print(citation)
+                    logger.debug('party1_local not in local_names')
+                    logger.debug(local_names)
+                    logger.debug(TXT_file)
+                    logger.debug(citation)
                     input('pause 9')
             else:
                 new_str +=';'.join(local_names[citation['party1_local_name_id']]) + '\t'+'None\t'
@@ -661,7 +661,7 @@ def make_citation_graph_string(OUT_file,local_keys):
         citation_graph_str += '\n'
         return(citation_graph_str)
     else:
-        print('No citation graph for',short_f)
+        logger.debug('No citation graph for' + str(short_f))
         return('')
                             
 def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False):
@@ -708,21 +708,21 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
             if xml_line.tag == 'citation':
                 local_id = xml_line.attrib['id']
                 if bad_file and local_id.startswith(bad_file):
-                    print(xml_line.attrib)
-                    print('1-->',end='')
+                    logger.debug(xml_line.attrib)
+                    logger.debug('1-->' + str(end=''))
                 # if local_id.startswith(bad_file):
-                #     print('1-->',end='')
+                #     logger.debug('1-->',end='')
                 # if local_id.startswith(bad_file):
                 #     keyword_pairs = generate_key_words_from_case_record(xml_line.attrib,trace=True)
                 if bad_file and local_id.startswith(bad_file):
-                    print(xml_line.attrib)
-                    print('1.1-->',end='')
+                    logger.debug(xml_line.attrib)
+                    logger.debug('1.1-->'  + str(end=''))
                     keyword_pairs = generate_key_words_from_case_record(xml_line.attrib,trace=True)
                 else:
                     keyword_pairs = generate_key_words_from_case_record(xml_line.attrib)
                 if bad_file and local_id.startswith(bad_file):
-                    print(xml_line.attrib)
-                    print('2-->',end='')
+                    logger.debug(xml_line.attrib)
+                    logger.debug('2-->'  + str(end=''))
                 if len(keyword_pairs)==1:
                     xml_line.attrib['lookup_key']=keyword_pairs[0][1]
                     xml_line.attrib['entry_type']=keyword_pairs[0][0]
@@ -730,20 +730,20 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
                         global_citations[keyword_pairs[0][1]]=xml_line.attrib
                 elif trace: 
                 ## elif trace or True:
-                    print(xml_line.attrib)
-                    print(xml_line.text)
-                    print('There should be exactly one keyword, but there are:',len(keywords))
-                    print('Keywords:',keywords)
+                    logger.debug(xml_line.attrib)
+                    logger.debug(xml_line.text)
+                    logger.debug('There should be exactly one keyword, but there are:'  + str(len(keywords)))
+                    logger.debug('Keywords:'  + str(keywords))
                     input('pause 10')
                 if bad_file and local_id.startswith(bad_file):
-                    print(3)
+                    logger.debug(3)
                 local_citation_dict[local_id]=xml_line.attrib
                 if bad_file and local_id.startswith(bad_file):
-                    print(3.1)
+                    logger.debug(3.1)
             elif (xml_line.tag == 'RELATION') and ('standard_case' in xml_line.attrib) and \
                 (('X_vs_Y' in xml_line.attrib) or ('case_citation_other' in xml_line.attrib)):
                 if bad_file and local_id.startswith(bad_file):
-                    print('D',end='')
+                    logger.debug('D'  + str(end=''))
                 if 'standard_case' in xml_line.attrib:
                     standard = xml_line.attrib['standard_case']
                 else:
@@ -779,16 +779,16 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
                                 linked_citations[other]=[coref]
         except:
             # if local_id.startswith(bad_file):
-            #     print(4)
+            #     logger.debug(4)
             bad_lines.append(line)
-            print('bad:',xml_line.attrib)
+            logger.debug('bad:'  + str(xml_line.attrib))
     if (len(bad_lines)>0):
-        print('Bad Lines found in file: ',short_file(TXT_file))
+        logger.debug('Bad Lines found in file: '  + str(short_file(TXT_file)))
         if trace or (len(bad_lines) > 0):
             for line in bad_lines:
-                print(line)
+                logger.debug(line)
             if (len(bad_lines)>0):
-                print('bad file: ',TXT_file)
+                logger.debug('bad file: '  + str(TXT_file))
     for value_set in linked_citations.values():
         for local_id in value_set[:]:
             for local_id2 in value_set:
@@ -799,8 +799,8 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
     for xml_line in trees:
             if xml_line.tag == 'citation': #process citations
                 if (not xml_line.attrib['id'] in local_citation_dict):
-                    print('missing from local_citation_dict')
-                    print(xml_line.attrib)
+                    logger.debug('missing from local_citation_dict')
+                    logger.debug(xml_line.attrib)
                     if trace:
                         input('pause 12')
                     local_citation_dict[xml_line.attrib['id']] = xml_line.attrib
@@ -932,7 +932,7 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
 #         create_csv_file(csv_file,root_directory,input_directories,IE_infile_type,trace=trace)
 #     read_in_csv_file(csv_file,trace=trace)
 #     ## input('pause for complete csv load')
-#     ## print(global_citations)
+#     ## logger.debug(global_citations)
 #     with open(out_graph,'w') as f_citation_graph,open(global_csv_file,'w') as f_global_citations:
 #         title_list = ['global_id','id1','lookup_key','entry_type','party1_id', 'party2_id', 'party1','party2','party1_short','party2_short','case_name', 'standard_reporter','volume','page_number']
 #         title_string = title_list[0]
@@ -944,11 +944,11 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
 #         output_tuples = []
 #         for indir in input_directories:
 #             full_dir =file_name_append(root_directory,indir)
-#             print('processing',indir,'for graph info')
+#             logger.debug('processing',indir,'for graph info')
 #             for infile in os.listdir(full_dir):
 #                 if infile.endswith(IE_infile_type):
 #                     if trace:
-#                         print(infile)
+#                         logger.debug(infile)
 #                     base_file = infile[:(-1*len(IE_infile_type))]
 #                     IE_file = file_name_append(full_dir,infile)
 #                     TXT_file = file_name_append(full_dir,base_file+txt_file_type)
@@ -956,12 +956,12 @@ def make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=False
 #                     if not short_file(IE_file) in processed:
 #                         output_tuples.append(make_IE_out_file(TXT_file,IE_file,OUT_file,processed_f,processed,trace=trace))
 #                         processed.append(short_file(IE_file))
-#         print('making graph')
+#         logger.debug('making graph')
 #         for out_file,xml_list,local_keys in output_tuples:
 #             ## ignoring xml_list
 #             citation_graph_str=make_citation_graph_string(out_file,local_keys)
 #             f_citation_graph.write(citation_graph_str)
-#         print('writing global files')
+#         logger.debug('writing global files')
 #         write_global_citations(f_global_citations)
 #     write_global_IE_file(output_tuples)
 #     if processed_f:
@@ -996,10 +996,10 @@ def run_global_coreference2(input_directories,outfile_prefix,txt_file_type='.txt
     ## one base on the same files
     if not (os.path.isfile(initial_table_file)) or initialize_csv:
         create_csv_file(initial_table_file,input_directories,IE_infile_type,outfile_prefix,trace=trace)
-        print('finish creating initial csv file')
+        logger.debug('finish creating initial csv file')
     read_in_csv_file(initial_table_file,outfile_prefix,trace=trace)
     ## input('pause for complete csv load')
-    ## print(global_citations)
+    ## logger.debug(global_citations)
     with open(out_graph,'w') as f_citation_graph,open(global_table_file,'w', encoding='utf-8') as f_global_citations:
         title_list = ['global_id','id1','lookup_key','entry_type','party1_id', 'party2_id', 'party1','party2','party1_short','party2_short','case_name', 'standard_reporter','volume','page_number']
         title_string = title_list[0]
@@ -1009,13 +1009,13 @@ def run_global_coreference2(input_directories,outfile_prefix,txt_file_type='.txt
         f_global_citations.write(title_string)
         ## first line listing what columns do
         output_tuples = []
-        print('making graph')
+        logger.debug('making graph')
         for indir in input_directories:
-            print('directory:',indir)
+            logger.debug('directory:' + str(indir))
             full_dir =indir ## file_name_append(root_directory,indir)
             for infile in os.listdir(full_dir):
                 if infile.endswith(IE_infile_type):
-                    ## print(infile)
+                    ## logger.debug(infile)
                     base_file = infile[:(-1*len(IE_infile_type))]
                     IE_file = file_name_append(full_dir,infile)
                     TXT_file = file_name_append(full_dir,base_file+txt_file_type)
